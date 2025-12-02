@@ -60,14 +60,14 @@ router.patch('/:id', (req, res) => {
         return res.status(404).json({ error: `Stone with id ${id} not found` });
     }
 
-    if(name) stone.name = name;
-    if(color) stone.color = color;
-    if(type) stone.type = type;
-    if(weight) stone.weight = weight;
-    if(origin) stone.origin = origin;
+    if (name) stone.name = name;
+    if (color) stone.color = color;
+    if (type) stone.type = type;
+    if (weight) stone.weight = weight;
+    if (origin) stone.origin = origin;
     
     res.json({ message: `Stone with the id ${id} has been updated.`, stone });
 
-})
+});
 
 export default router;
