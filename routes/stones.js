@@ -12,13 +12,16 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     const stone = req.body;
 
-    const  stoneId = uuidv4();
+    // Validate required fields
+    if (!stone.name || !stone.color) {
+        return res.status(400).json({ error: 'Name and color are required fields' });
+    }
 
-    const stoneWithId = { ...stone, id: uuidv4() }
+    const stoneWithId = { ...stone, id: uuidv4() };
 
-    stones.push({ ...stone, id: uuidv4() });
+    stones.push(stoneWithId);
 
-    res.send(`Stone with the name ${stone.name} added to the database! `);
+    res.status(201).json({ message: `Stone with the name ${stone.name} added to the database!`, stone: stoneWithId });
 });
 
 router.get('/:id', (req, res) => {
@@ -26,15 +29,25 @@ router.get('/:id', (req, res) => {
 
     const foundStone = stones.find((stone) => stone.id === id);
     
-    res.send(foundStone);
+    if (!foundStone) {
+        return res.status(404).json({ error: `Stone with id ${id} not found` });
+    }
+
+    res.json(foundStone);
 });
 
 router.delete('/:id', (req, res) => {
     const {id} = req.params;
 
-    stones = stones.filter((stone) => stone.id != id);
+    const stoneIndex = stones.findIndex((stone) => stone.id === id);
 
-    res.send(`Stone with the id ${id} deleted from the database. `);
+    if (stoneIndex === -1) {
+        return res.status(404).json({ error: `Stone with id ${id} not found` });
+    }
+
+    stones = stones.filter((stone) => stone.id !== id);
+
+    res.json({ message: `Stone with the id ${id} deleted from the database.` });
 });
 
 router.patch('/:id', (req, res) => {
@@ -43,13 +56,17 @@ router.patch('/:id', (req, res) => {
 
     const stone = stones.find((stone) => stone.id === id);
 
+    if (!stone) {
+        return res.status(404).json({ error: `Stone with id ${id} not found` });
+    }
+
     if(name) stone.name = name;
     if(color) stone.color = color;
     if(type) stone.type = type;
     if(weight) stone.weight = weight;
     if(origin) stone.origin = origin;
     
-    res.send(`User with the id ${id} has been updated. `);
+    res.json({ message: `Stone with the id ${id} has been updated.`, stone });
 
 })
 
